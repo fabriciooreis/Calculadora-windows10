@@ -3,13 +3,15 @@ class calcController{
     constructor(){
         this._dispalyCalcEl = document.querySelector("#display");
         this._operation = [];
+        this._operationOfCalc = ["+", "-", "/", "x", "%"];
+        this._operationComplexes = ["√","x²","¹/x","←"];
         this.initButtonsEventClick();
         this.initButtonsEventDrag();
+        this.initialize();
         
     }
     initialize(){
-        
-
+        this.setClear();
     }
     showConsole(){
         console.log(this._operation);
@@ -35,12 +37,39 @@ class calcController{
     
     //método para adicionar no vetor operation
     addOperation(value){
-        //verificando se o ultimo elemento do vetor não é um número
-        if(isNaN(this.getLastOperation())){
+        
+       //verificar se o primeiro valor a ser inserido no vetor
+        if(this.getLengthArray() == 0){
+            //o que vai ser inserido no 1º índice é um sinal matemático? 
+            if(this.getOperationOfCalc(value) >-1){
+                console.log("Não posso inserir um operador no primeiro indice do vetor");
+            }else if(!isNaN(value)){
+                this._operation.push(value);
+                this.showConsole();
+            }
+            //ultima opção é um número && é o valor de entrada é um número
+        }else if((!isNaN(this.getLastOperation())) && (!isNaN(value))){
+            let lastNumber = this._operation.pop();
+            this._operation.push(lastNumber+value);
+            this.showConsole();
 
-        }else{//se for um número
-             
-        }
+           //se o ultimo index é um número e o valor de entrada é um sinal
+        }else if((!isNaN(this.getLastOperation())) && isNaN(value)){
+            this._operation.push(value);
+            this.showConsole();
+
+            //se o ultimo index for um sinal e o valor de entrada for um número
+        }else if(isNaN(this.getLastOperation()) && (!isNaN(value))){
+            this._operation.push(value);
+            this.showConsole();
+
+            //se o ultimo index do vetor for um operador e o valor de entrada também for um operador
+            //trocar a operação do calculo
+        }else if(isNaN(this.getLastOperation()) && isNaN(value)){
+            this._operation.pop();
+            this._operation.push(value);
+            this.showConsole();
+        }  
         
     }
     setError(value){
@@ -69,6 +98,14 @@ class calcController{
         });
     }
 
+    getOperationComplexes(value){
+        return this._operationComplexes.indexOf(value);
+    }
+
+    getOperationOfCalc(value){
+        return this._operationOfCalc.indexOf(value);
+    }
+
     get displayCalc(){
         return this._dispalyCalcEl;
     }
@@ -94,6 +131,19 @@ class calcController{
                 break;
             case 'C':
                 this.setClear();
+                break;
+            case '+':
+            case '-':
+            case '/':
+            case 'x':
+            case '%':
+                this.addOperation(value);
+                break;
+            case '√':
+            case 'x²':
+            case '¹/x':
+            case '←':
+                this.addOperation(value);
                 break;
             default:
                 this.setError(value);
