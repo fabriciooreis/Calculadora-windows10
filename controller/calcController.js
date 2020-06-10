@@ -14,13 +14,37 @@ class calcController{
     showConsole(){
         console.log(this._operation);
     }
-    //método para adicionar no vetor operation
-    addOperation(value){
-        this._operation.push(value);
+    //removendo a ultima posição do array
+    setClearEntry(){
+        this._operation.pop();
         this.showConsole();
     }
-    setError(){
-        this.displayCalc = "Error";
+    //limpando o array
+    setClear(){
+        this._operation = [];
+        this.showConsole();
+    }
+    //retorna o ultimo index do vetor
+    getLastOperation(){
+        return this._operation[this._operation.length-1];
+    }
+    //retorna o tamanho do vetor
+    getLengthArray(){
+        return this._operation.length;
+    }
+    
+    //método para adicionar no vetor operation
+    addOperation(value){
+        //verificando se o ultimo elemento do vetor não é um número
+        if(isNaN(this.getLastOperation())){
+
+        }else{//se for um número
+             
+        }
+        
+    }
+    setError(value){
+        this.displayCalc = "Error "+value;
     }
     //iniciando o evento de click
     initButtonsEventClick(){
@@ -65,8 +89,14 @@ class calcController{
             case '9':
                 this.addOperation(value);
                 break;
+            case 'CE':
+                this.setClearEntry();
+                break;
+            case 'C':
+                this.setClear();
+                break;
             default:
-                this.setError();
+                this.setError(value);
                 break;
         }
     }
