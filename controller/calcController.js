@@ -3,6 +3,7 @@ class calcController{
     constructor(){
         this.initialize();
         this._dispalyCalcEl = document.querySelector("#display");
+        this._cont = 0;
         this._operation = [];
         this._operationOfCalc = ["+", "-", "/", "x", "%"];
         this._operationComplexes = ["√","x²","¹/x","←"];
@@ -44,19 +45,59 @@ class calcController{
             this.CalC();
         }
     }
+    //calculo será realizado aqui
+    getResult(){
+        let value = this._operation.join("");
+        value = value.replace("x", "*");
+        return eval(value);
+    }
     //método para calcular os indices do vetor
     CalC(){
-    
-        let lastOperation = this._operation.pop();
-        let calcArray = eval(this._operation.join(""));
-        this._operation = [calcArray, lastOperation];
-        this.showConsole();
+        let lastOperation ="";
+        let firstNumber ="";
+
+        if(this.getLengthArray() == 1){
+            
+            firstNumber = this._operation[0];
+            this._operation =[firstNumber];
+            this.showConsole();
+            return;
+        }else if(this.getLengthArray() == 2){
+            
+            //terminar isso
+            firstNumber = this._operation[0];
+            lastOperation = this._operation[1];
+            this.showConsole();
+            return;
+        
+        }else if(this.getLengthArray() == 3){
+            
+            firstNumber = this.getResult();
+            this._operation = [firstNumber.toString()];
+            this.showConsole();
+            return;
+
+        }else if(this.getLengthArray() > 3){
+            
+            lastOperation = this._operation.pop();
+            let calcArray = this.getResult();
+            this._operation = [calcArray.toString(), lastOperation]; 
+            this.showConsole();
+            return;
+
+        }else{
+            
+            this._cont++;
+            console.log(this._cont);
+        }
+        
+       
+       
     
     }
     
     //método para adicionar no vetor operation
     addOperation(value){
-    
 
          //verificar se o primeiro valor a ser inserido no vetor
         if(this.getLengthArray() == 0){
@@ -161,6 +202,9 @@ class calcController{
             case '¹/x':
             case '←':
                 //this.addOperation(value);
+                break;
+            case '=':
+                this.CalC();
                 break;
             default:
                 this.setError(value);
