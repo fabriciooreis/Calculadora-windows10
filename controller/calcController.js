@@ -36,12 +36,24 @@ class calcController{
     getLengthArray(){
         return this._operation.length;
     }
+    getIndexOneArray(){
+        return this._operation[1];
+    }
+    getLastButOnePositionArray(){
+        return this._operation[this._operation.length-2];
+    }
+    getFirtNumberArray(){
+        return this._operation[0];
+    }
     //método para inserir no vetor, fazendo a verificação
     //caso o vetor seja maior que 3, chama a função CalC
     pushOperation(value){
         this._operation.push(value);
         this.showConsole();
-        if(this.getLengthArray() > 3){
+        if(this.getLastOperation() == "%"){
+            this.CalCPercent();
+
+        }else if(this.getLengthArray() > 3){
             this.CalC();
         }
     }
@@ -51,6 +63,11 @@ class calcController{
         value = value.replace("x", "*");
         return eval(value);
     }
+    //confirmar qual o operador, o método retorna o index 
+    getOperator(value){
+        return this._operation.indexOf(value);
+    }
+
     //método para calcular os indices do vetor
     CalC(){
         let lastOperation ="";
@@ -90,10 +107,20 @@ class calcController{
             this._cont++;
             console.log(this._cont);
         }
+
+    }
+    //calculo dos %
+    CalCPercent(){
+        console.log("entrei no método CalcPercent()");
+        //remove percent of array
+        this._operation.pop();
+
+        let beforePercent = this.getLastOperation();
+        beforePercent /= 100;
         
-       
-       
-    
+        this._operation.pop();
+        this.pushOperation(beforePercent.toString());
+        this.showConsole();
     }
     
     //método para adicionar no vetor operation
@@ -116,6 +143,7 @@ class calcController{
 
            //se o ultimo index é um número e o valor de entrada é um sinal
         }else if((!isNaN(this.getLastOperation())) && isNaN(value)){
+            
             this.pushOperation(value);
 
             //se o ultimo index for um sinal e o valor de entrada for um número
@@ -125,6 +153,7 @@ class calcController{
             //se o ultimo index do vetor for um operador e o valor de entrada também for um operador
             //trocar a operação do calculo
         }else if(isNaN(this.getLastOperation()) && isNaN(value)){
+
             this._operation.pop();
             this.pushOperation(value);
         }  
