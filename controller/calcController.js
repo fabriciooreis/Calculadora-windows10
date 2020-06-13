@@ -156,6 +156,17 @@ class calcController{
         }
         
     }
+    addDot(value){
+        value = value.replace(",", ".");
+        if(!isNaN(this.getLastOperation())){
+            let lastNumber = this._operation.pop();
+            lastNumber = lastNumber.toString()+value.toString();
+            this._operation.push(lastNumber);
+            this.showConsole();
+        }else{
+            return;
+        }
+    }
     
     //método para adicionar no vetor operation
     addOperation(value){
@@ -268,6 +279,9 @@ class calcController{
                 break;
             case '=':
                 this.CalC();
+                break;
+            case ',':
+                this.addDot(value);
                 break;
             default:
                 this.setError(value);
