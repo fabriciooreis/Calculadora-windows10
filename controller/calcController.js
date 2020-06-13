@@ -109,18 +109,52 @@ class calcController{
         }
 
     }
+    getCalCPercent(value){
+
+        let valueOne = this._operation[0];
+        let valueTwo = this._operation[2];
+        let result ="";
+
+        valueOne = Number(valueOne);
+        valueTwo = Number(valueTwo);
+
+        try{
+            if(value == "+"){
+            
+                console.log("Entrei aqui no mais");
+                result = (valueOne + (valueOne *(valueTwo/100)));
+            }else if(value == "-"){
+                result = ((valueOne - (valueOne *(valueTwo/100))));
+            } 
+
+            this._operation =[result.toString()];
+            this.showConsole();
+
+        }catch(error){
+            this.setError();
+        }
+      
+        
+
+    }
     //calculo dos %
     CalCPercent(){
-        console.log("entrei no método CalcPercent()");
-        //remove percent of array
-        this._operation.pop();
-
-        let beforePercent = this.getLastOperation();
-        beforePercent /= 100;
+        if(this.getOperator("+") > -1){
+            this.getCalCPercent("+");
+        }else if(this.getOperator("-") > -1){
+            this.getCalCPercent("-");
+        }else{
+            //remove percent of array
+            this._operation.pop();
         
-        this._operation.pop();
-        this.pushOperation(beforePercent.toString());
-        this.showConsole();
+            let beforePercent = this.getLastOperation();
+            beforePercent /= 100;
+            
+            this._operation.pop();
+            this.pushOperation(beforePercent.toString());
+            this.showConsole();
+        }
+        
     }
     
     //método para adicionar no vetor operation
@@ -160,7 +194,7 @@ class calcController{
         
     }
     setError(value){
-        this.displayCalc = "Error "+value;
+        this.displayCalc = "Sintaxe Error "+value;
     }
     //iniciando o evento de click
     initButtonsEventClick(){
