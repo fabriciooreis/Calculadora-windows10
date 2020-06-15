@@ -71,7 +71,7 @@ class calcController{
         return this._operation;
     }
     getOperationOfIlimited(value){
-        return this._operationLimited.indexOf(value);
+        return this._operationIlimited.indexOf(value);
     }
     
 
@@ -142,6 +142,7 @@ class calcController{
     //método para adicionar no vetor operation
     addOperation(value){
         let lastNumber ="";
+        let lastOperator="";
 
          //verificar se o primeiro valor a ser inserido no vetor
         if(this.getLengthArray() == 0){
@@ -149,45 +150,49 @@ class calcController{
             if(this.getOperationLimited(value) >-1){
                 //console.log("Não posso inserir um operador no primeiro indice do vetor");
                 return;
+                //o que vai ser inserido no vetor é um sinal do ilimited
             }else if(this.getOperationIlimited(value) > -1){
                 this.pushOperation(value);
-                
+                //o que vai ser inserido é um número
             }else if(!isNaN(value)){
                 this.pushOperation(value);
             }
             //ultimo index é um número && é o valor de entrada é um número
+            //concatena os números e armazena no mesmo indice
         }else if((!isNaN(this.getLastOperation())) && (!isNaN(value))){
             lastNumber = this._operation.pop();
             lastNumber = (lastNumber+value);
             this.pushOperation(lastNumber);
 
            //se o ultimo index é um número e o valor de entrada é um sinal
+           //armazena no proximo index do vetor
         }else if((!isNaN(this.getLastOperation())) && isNaN(value)){
             
             this.pushOperation(value);
 
             //se o ultimo index for um sinal e o valor de entrada for um número
         }else if(isNaN(this.getLastOperation()) && (!isNaN(value))){
-            //se o ultimo sinal for um sinal do votor ilimited, concatena com o número
-            if(this.getOperationOfIlimited(value) >-1){
-                lastNumber = this._operation.pop();
-                lastNumber = (lastNumber+value);
-                this.pushOperation(lastNumber);
-            }else{
-                this.pushOperation(value);
-            }
-            
+            lastOperator = this.getLastOperation();
 
+            this.pushOperation(value);
+          
             //se o ultimo index do vetor for um operador e o valor de entrada também for um operador
-            //trocar a operação do calculo
+            //trocar a operação do calculo, exceto se for um operadorIlimited
         }else if(isNaN(this.getLastOperation()) && isNaN(value)){
+            // se na primeira posição for entrar um operador Limited, não será permitido.
             if(this.getLengthArray() == 1 && this.getOperationLimited(value) > -1){
                 return;
+                //se o ultimo index for um operador e esse o perador for um operador do ilimited,
+                //não é feita a substituição, simplesmente é acrescentado em um novo index do vetor
             }else{
                 this._operation.pop();
                 this.pushOperation(value);
             }
-        }  
+        } 
+    
+        
+    }
+    setLastNumberToDisplay(){
         
     }
 
