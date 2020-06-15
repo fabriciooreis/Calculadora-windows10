@@ -5,8 +5,8 @@ class calcController{
         this._dispalyCalcEl = document.querySelector("#display");
         this._cont = 0;
         this._operation = [];
-        this._operationOfCalc = ["+", "-", "/", "x", "%"];
-        this._operationComplexes = ["√","x²","¹/x","←"];
+        this._operationLimited = ["/", "x", "%", "x²"];
+        this._operationIlimited = ["+", "-","¹/x", "√"];
         this.initButtonsEventClick();
         this.initButtonsEventDrag();
         
@@ -53,8 +53,8 @@ class calcController{
         if(this.getLastOperation() == "%"){
             this.CalCPercent();
 
-        }else if(this.getLengthArray() > 3){
-            this.CalC();
+        }else if(this.getLengthArray() > 4){
+            //this.CalC();
         }
     }
     //calculo será realizado aqui
@@ -67,46 +67,17 @@ class calcController{
     getOperator(value){
         return this._operation.indexOf(value);
     }
+    getArray(){
+        return this._operation;
+    }
+    getOperationOfIlimited(value){
+        return this._operationLimited.indexOf(value);
+    }
+    
 
     //método para calcular os indices do vetor
     CalC(){
-        let lastOperation ="";
-        let firstNumber ="";
-
-        if(this.getLengthArray() == 1){
-            
-            firstNumber = this._operation[0];
-            this._operation =[firstNumber];
-            this.showConsole();
-            return;
-        }else if(this.getLengthArray() == 2){
-            
-            //terminar isso
-            firstNumber = this._operation[0];
-            lastOperation = this._operation[1];
-            this.showConsole();
-            return;
         
-        }else if(this.getLengthArray() == 3){
-            
-            firstNumber = this.getResult();
-            this._operation = [firstNumber.toString()];
-            this.showConsole();
-            return;
-
-        }else if(this.getLengthArray() > 3){
-            
-            lastOperation = this._operation.pop();
-            let calcArray = this.getResult();
-            this._operation = [calcArray.toString(), lastOperation]; 
-            this.showConsole();
-            return;
-
-        }else{
-            
-            this._cont++;
-            console.log(this._cont);
-        }
 
     }
     getCalCPercent(value){
@@ -170,19 +141,23 @@ class calcController{
     
     //método para adicionar no vetor operation
     addOperation(value){
+        let lastNumber ="";
 
          //verificar se o primeiro valor a ser inserido no vetor
         if(this.getLengthArray() == 0){
             //o que vai ser inserido no 1º índice é um sinal matemático? 
-            if(this.getOperationOfCalc(value) >-1){
-                console.log("Não posso inserir um operador no primeiro indice do vetor");
-            }else if(!isNaN(value)){
+            if(this.getOperationLimited(value) >-1){
+                //console.log("Não posso inserir um operador no primeiro indice do vetor");
+                return;
+            }else if(this.getOperationIlimited(value) > -1){
                 this.pushOperation(value);
                 
+            }else if(!isNaN(value)){
+                this.pushOperation(value);
             }
             //ultimo index é um número && é o valor de entrada é um número
         }else if((!isNaN(this.getLastOperation())) && (!isNaN(value))){
-            let lastNumber = this._operation.pop();
+            lastNumber = this._operation.pop();
             lastNumber = (lastNumber+value);
             this.pushOperation(lastNumber);
 
@@ -193,17 +168,29 @@ class calcController{
 
             //se o ultimo index for um sinal e o valor de entrada for um número
         }else if(isNaN(this.getLastOperation()) && (!isNaN(value))){
-            this.pushOperation(value);
+            //se o ultimo sinal for um sinal do votor ilimited, concatena com o número
+            if(this.getOperationOfIlimited(value) >-1){
+                lastNumber = this._operation.pop();
+                lastNumber = (lastNumber+value);
+                this.pushOperation(lastNumber);
+            }else{
+                this.pushOperation(value);
+            }
+            
 
             //se o ultimo index do vetor for um operador e o valor de entrada também for um operador
             //trocar a operação do calculo
         }else if(isNaN(this.getLastOperation()) && isNaN(value)){
-
-            this._operation.pop();
-            this.pushOperation(value);
+            if(this.getLengthArray() == 1 && this.getOperationLimited(value) > -1){
+                return;
+            }else{
+                this._operation.pop();
+                this.pushOperation(value);
+            }
         }  
         
     }
+
     setError(value){
         this.displayCalc = "Sintaxe Error "+value;
     }
@@ -230,12 +217,12 @@ class calcController{
         });
     }
 
-    getOperationComplexes(value){
-        return this._operationComplexes.indexOf(value);
+    getOperationIlimited(value){
+        return this._operationIlimited.indexOf(value);
     }
 
-    getOperationOfCalc(value){
-        return this._operationOfCalc.indexOf(value);
+    getOperationLimited(value){
+        return this._operationLimited.indexOf(value);
     }
 
     get displayCalc(){
@@ -272,10 +259,14 @@ class calcController{
                 this.addOperation(value);
                 break;
             case '√':
+                this.addOperation(value);
+                break;
             case 'x²':
+                this.addOperation(value);
+                break;
             case '¹/x':
             case '←':
-                //this.addOperation(value);
+                this.addOperation(value);
                 break;
             case '=':
                 this.CalC();
