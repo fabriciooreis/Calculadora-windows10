@@ -156,6 +156,7 @@ class calcController{
         if(this.getLengthArray() == 0 || isNaN(this.getLastOperation())){
             this.pushOperation(value);
             
+            
             //Se o ultimo elemento do vetor for um número e o valor da nova entrada for um número, concatena e add
         }else if(!isNaN(this.getLastOperation()) && !isNaN(value)){
             lastNumber = this._operation.pop();
