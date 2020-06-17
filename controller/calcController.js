@@ -76,6 +76,18 @@ class calcController{
         doot = value.indexOf(".");
         return doot;
     }
+    addPercent(value){
+        let lastNumber;
+        if(this.getLengthArray()==0){
+            return;
+        }else if(this.getLastOperation() == '%'){
+            return;
+        }else if(!isNaN(this.getLastOperation())){
+            lastNumber = this._operation.pop();
+            this.pushOperation(lastNumber+value);
+        }
+
+    }
     //Adicionando o ponto nos números
     addDot(value){
         let lastNumber;
@@ -104,7 +116,8 @@ class calcController{
 
     //método para adicionar os sinais no vetor
     addSign(value){
-
+        let lastNumber;
+        let result;
         //se o vetor ainda não tiver nenhum elemento
         if(this.getLengthArray() == 0){
             return;
@@ -131,16 +144,31 @@ class calcController{
         }
         //se o ultimo elemento do vetor for um sinal
         else if(isNaN(this.getLastOperation())){
-            this._operation.pop();
-            this.pushOperation(value);
+            lastNumber = this.getLastOperation();
+            lastNumber = lastNumber.indexOf("%");
+            if(lastNumber > -1){
+                this.pushOperation(value);
+            }else{
+                this._operation.pop();
+                this.pushOperation(value);
+            }
+            
         }
     }
 
     //um sob x
     oneUnderX(value){
-        if(isNaN(this.getLastOperation())){
+        let lastNumber;
+        lastNumber = this.getLastOperation();
+        lastNumber = lastNumber.indexOf("%");
+        //se no ultimo index tiver o sinal de %
+        if(isNaN(this.getLastOperation()) && lastNumber >-1){
+            return;
+            //se for somente um sinal qualuer
+        }else if(isNaN(this.getLastOperation())){
             this.pushOperation(value);
-        }else if(!isNaN(this.getLastOperation())){}
+        }
+        else if(!isNaN(this.getLastOperation())){}
         return;
     }
    
@@ -300,6 +328,8 @@ class calcController{
                 this.addRootSquare();
                 break;
             case '%':   
+                this.addPercent(value);
+                break;
             case '√':
                 this.getRootSrt(value);
                 break;
