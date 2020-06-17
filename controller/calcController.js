@@ -120,21 +120,28 @@ class calcController{
                 this.pushOperation(value);
                 return;
             }
-            
+             
             //se o ultimo elemento do vetor for um número
         }else if(!isNaN(this.getLastOperation())){
             this.pushOperation(value);
-
-            //se o ultimo elemento do vetor for um sinal
-        }else if(isNaN(this.getLastOperation())){
+            
+            //impedindo do ¹/x ser trocado por outro sinal
+        }else if(this.getLastOperation() == '¹/x'){
+            return;
+        }
+        //se o ultimo elemento do vetor for um sinal
+        else if(isNaN(this.getLastOperation())){
             this._operation.pop();
             this.pushOperation(value);
         }
     }
 
     //um sob x
-    oneUnderX(){
-
+    oneUnderX(value){
+        if(isNaN(this.getLastOperation())){
+            this.pushOperation(value);
+        }else if(!isNaN(this.getLastOperation())){}
+        return;
     }
    
 
