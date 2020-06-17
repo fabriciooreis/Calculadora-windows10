@@ -70,14 +70,33 @@ class calcController{
     CalCPercent(){
         
     }
+    //buscando o ponto 
+    getDoot(value){
+        let doot;
+        doot = value.indexOf(".");
+        return doot;
+    }
     //Adicionando o ponto nos números
     addDot(value){
+        let lastNumber;
         value = value.replace(",", ".");
         if(!isNaN(this.getLastOperation())){
-            let lastNumber = this._operation.pop();
-            lastNumber = lastNumber.toString()+value.toString();
-            this._operation.push(lastNumber);
-            this.showConsole();
+            lastNumber = this._operation.pop();
+            //se já tiver um ponto
+            if(this.getDoot(lastNumber) > -1){
+                //novamente eu add no vetor
+                lastNumber = lastNumber.toString();
+                this.pushOperation(lastNumber);
+
+            }else{
+                //se não tiver o ponto, acrescento junto ao ultimo número um ponto
+                lastNumber = lastNumber.toString()+value.toString();
+                this.pushOperation(lastNumber);
+                
+            }
+
+        }else if(isNaN(this.getLastOperation())){
+                this.pushOperation("0.");
         }else{
             return;
         }
@@ -91,10 +110,17 @@ class calcController{
             return;
             //para não trocar o sinal de - e + no primeiro elemento do vetor
         }else if(this.getLengthArray() == 1 && value == 'x'){
-            return;
+            if(!isNaN(this.getLastOperation())){
+                this.pushOperation(value);
+                return;
+            }
             //para não trocar o sinal de - e + no primeiro elemento do vetor
         }else if(this.getLengthArray() == 1 && value == "/"){
-            return;
+            if(!isNaN(this.getLastOperation())){
+                this.pushOperation(value);
+                return;
+            }
+            
             //se o ultimo elemento do vetor for um número
         }else if(!isNaN(this.getLastOperation())){
             this.pushOperation(value);
@@ -104,6 +130,11 @@ class calcController{
             this._operation.pop();
             this.pushOperation(value);
         }
+    }
+
+    //um sob x
+    oneUnderX(){
+
     }
    
 
@@ -166,7 +197,8 @@ class calcController{
         //this.setLastNumberToDisplay();
     }
     //inserindo o sinal de + ou -
-    addMoreOrLess(value){
+    //também inverte os sinais.
+    addMoreOrLess(){
         if(this.getLengthArray() == 0){
             this.pushOperation("-")
             //invertendo os sinais
@@ -265,6 +297,8 @@ class calcController{
                 this.getRootSrt(value);
                 break;
             case '¹/x':
+                this.oneUnderX(value);
+                break;
             case '←':
                 break;
             case '=':
@@ -274,7 +308,7 @@ class calcController{
                 this.addDot(value);
                 break;
             case '±':
-                this.addMoreOrLess(value);
+                this.addMoreOrLess();
                 break;
             default:
                 this.setError(value);
