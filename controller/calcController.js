@@ -196,12 +196,19 @@ class calcController{
         }
     }
     //Tirar a raiz
-    getRootSrt(value){
-        let sign = this.getSignIntoArray(value);
+    setRootSrt(value){
+    
         if(this.getLengthArray() == 0){
             this.pushOperation(value);
             return;
+
+        }else if(this.getLastOperation() == '√'){
+            return;
+            //se o ultimo index for um número, não adiciona, primeiro add o sinal
+        }else if(!isNaN(this.getLastOperation())){
+            return;
         }
+        //getSignIntoArray busca se o valor passado pertence aos sinais primários dos calculos x / + -
         if(isNaN(this.getLastOperation()) || this.getSignIntoArray(value) >-1){
             if(isNaN(this.getLastOperation())){
                 this.pushOperation(value);
@@ -217,12 +224,26 @@ class calcController{
     
     //método para adicionar no vetor operation
     addNumber(value){
-        let lastNumber ="";
-
+        let lastNumber;
+        //se o tamanho do vetor for 0 ou o ultimo index não for um número
         if(this.getLengthArray() == 0 || isNaN(this.getLastOperation())){
-            this.pushOperation(value);
-            
-            
+            //se o array ainda estiver vazio
+            if(this.getLengthArray() ==0){
+                this.pushOperation(value);
+                console.log("nada no vetor");
+                //se o array for maior do que 1
+            }else if(this.getLengthArray() >= 1){
+                //busco dentro da ultima opção se existe um sinal de %
+                lastNumber = this.getLastOperation();
+                lastNumber = lastNumber.indexOf("%");
+                //caso exista o % não permito add outro número, pois o próximo valor deve ser um sinal
+                if(lastNumber > -1){
+                    return;
+                }else{
+                    //caso não exista o %, add no vetor o número digitado
+                    this.pushOperation(value);
+                }
+            }
             //Se o ultimo elemento do vetor for um número e o valor da nova entrada for um número, concatena e add
         }else if(!isNaN(this.getLastOperation()) && !isNaN(value)){
             lastNumber = this._operation.pop();
@@ -331,7 +352,7 @@ class calcController{
                 this.addPercent(value);
                 break;
             case '√':
-                this.getRootSrt(value);
+                this.setRootSrt(value);
                 break;
             case '¹/x':
                 this.oneUnderX(value);
