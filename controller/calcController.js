@@ -5,9 +5,9 @@ class calcController{
         this._dispalyCalcEl = document.querySelector("#display");
         this._operation = [];
         this._operationSign = ["/", "x", "+", "-"];
-        this._root = '√';
-        this._oneX = '¹/x';
-        this._xSquare = 'x²';
+        //this._root = '√';
+        //this._oneX = '¹/x';
+        //this._xSquare = 'x²';
         this.initButtonsEventClick();
         this.initButtonsEventDrag();   
     }
@@ -70,21 +70,60 @@ class calcController{
     CalCPercent(){
         
     }
+
     //buscando o ponto 
     getDoot(value){
         let doot;
         doot = value.indexOf(".");
         return doot;
     }
+
+    //buscando o %
+    getPercent(value){
+        let percent;
+        percent = value.indexOf('%');
+        return percent;
+    }
+    //add percent
     addPercent(value){
         let lastNumber;
+        let dootPosition;
+        
         if(this.getLengthArray()==0){
             return;
         }else if(this.getLastOperation() == '%'){
             return;
+            //verificando se a ultima opção é um número
         }else if(!isNaN(this.getLastOperation())){
-            lastNumber = this._operation.pop();
-            this.pushOperation(lastNumber+value);
+
+            lastNumber = this.getLastOperation();
+            //posicao do ponto na string
+            dootPosition = this.getDoot(lastNumber);
+            
+            //aqui se o ponto existir, só é permitido add se depois do ponto existir um número 
+            if(dootPosition > -1){
+                let result = lastNumber.substring((dootPosition+1));
+
+                //se dopois do ponto for vazio retorna, para que não entre na calculadora como por exemplo 0.%
+                if(result == ""){
+                    this.showConsole();
+                    return;
+                    
+                    //se depois do ponto existir um número, então pode add o %
+                }else if(!isNaN(result)){
+                    lastNumber = this._operation.pop();
+                    this.pushOperation(lastNumber+value);
+
+                }
+
+            }
+            else{
+                lastNumber = this._operation.pop();
+                this.pushOperation(lastNumber+value);
+            }
+            
+            //se não for um número, ou tiver um ponto
+            //o 0. alguma coisa é considerado um número pelo método isNaN();
         }
 
     }
@@ -123,13 +162,23 @@ class calcController{
             return;
             //para não trocar o sinal de - e + no primeiro elemento do vetor
         }else if(this.getLengthArray() == 1 && value == 'x'){
+            lastNumber = this.getLastOperation();
+            lastNumber = lastNumber.indexOf("%");
             if(!isNaN(this.getLastOperation())){
+                this.pushOperation(value);
+                return;
+            }else if(isNaN(this.getLastOperation()) && lastNumber >-1){
                 this.pushOperation(value);
                 return;
             }
             //para não trocar o sinal de - e + no primeiro elemento do vetor
         }else if(this.getLengthArray() == 1 && value == "/"){
+            lastNumber = this.getLastOperation();
+            lastNumber = lastNumber.indexOf("%");
             if(!isNaN(this.getLastOperation())){
+                this.pushOperation(value);
+                return;
+            }else if(isNaN(this.getLastOperation()) && lastNumber >-1){
                 this.pushOperation(value);
                 return;
             }
@@ -145,7 +194,9 @@ class calcController{
         //se o ultimo elemento do vetor for um sinal
         else if(isNaN(this.getLastOperation())){
             lastNumber = this.getLastOperation();
+            //procura se no ultimo elemento existe o %
             lastNumber = lastNumber.indexOf("%");
+
             if(lastNumber > -1){
                 this.pushOperation(value);
             }else{
@@ -210,15 +261,25 @@ class calcController{
         }
         //getSignIntoArray busca se o valor passado pertence aos sinais primários dos calculos x / + -
         if(isNaN(this.getLastOperation()) || this.getSignIntoArray(value) >-1){
+            //verifica se o ultimo index não é um número
             if(isNaN(this.getLastOperation())){
-                this.pushOperation(value);
-                return;
+
+                let last = this.getLastOperation();
+                //busca se o % é o ultimo valor
+                if(this.getPercent(last) > -1){
+                    return;
+                }else{
+                    this.pushOperation(value);
+                    return;
+                }
+                
             }else if(this.getSignIntoArray(value) > -1){
                 this.pushOperation(value);
                 return;
             }
             
         }
+        
     }
     
     
@@ -230,7 +291,6 @@ class calcController{
             //se o array ainda estiver vazio
             if(this.getLengthArray() ==0){
                 this.pushOperation(value);
-                console.log("nada no vetor");
                 //se o array for maior do que 1
             }else if(this.getLengthArray() >= 1){
                 //busco dentro da ultima opção se existe um sinal de %
