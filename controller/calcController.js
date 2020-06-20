@@ -2,7 +2,7 @@ class calcController{
 
     constructor(){
         this.initialize();
-        this._dispalyCalcEl = document.querySelector("#display");
+        this._displayCalcEl = document.getElementById("display");
         this._operation = [];
         this._operationSign = ["/", "x", "+", "-"];
         //this._root = '√';
@@ -22,12 +22,19 @@ class calcController{
     setClearEntry(){
         this._operation.pop();
         this.showConsole();
+        this.setLastOperationToDispalay();
     }
     //limpando o array
     setClear(){
         this._operation = [];
         this.showConsole();
-        //this.setLastNumberToDisplay();
+        
+    }
+    //setar o display
+    setLastOperationToDispalay(){
+         
+        let lastNumber = this._operation.join("");
+        this.displayCalc = lastNumber;
     }
     //retorna o ultimo index do vetor
     getLastOperation(){
@@ -229,6 +236,7 @@ class calcController{
     pushOperation(value){
         this._operation.push(value);
         this.showConsole();
+        this.setLastOperationToDispalay();
     }
     //adionar raiz quadrada
     addRootSquare(){
@@ -245,6 +253,7 @@ class calcController{
         }else{
             return;
         }
+        
     }
     //Tirar a raiz
     setRootSrt(value){
@@ -310,7 +319,7 @@ class calcController{
             lastNumber += value;
             this.pushOperation(lastNumber);
         }
-        //this.setLastNumberToDisplay();
+        
     }
     //inserindo o sinal de + ou -
     //também inverte os sinais.
@@ -332,20 +341,9 @@ class calcController{
         }
     }
 
-    //display Calc
-    setLastNumberToDisplay(){
-        let lastNum = "";
-            
-        for(let x = 0; x< this._operation.length; x++){
-            lastNum += this._operation[x];
-        }
-
-        console.log(lastNum);
-        this.setDisplayCalc = lastNum;
-    }
 
     setError(){
-        this.setDisplayCalc = "Sintaxe Error ";
+        this.displayCalc = "Sintaxe Error ";
     }
     //iniciando o evento de click
     initButtonsEventClick(){
@@ -371,10 +369,11 @@ class calcController{
     }
 
     get displayCalc(){
-        return this._dispalyCalcEl;
+        return this._displayCalcEl.innerHTML;
     }
-    set setDisplayCalc(value){
-        this._dispalyCalcEl.innerHTML = value;
+    
+    set displayCalc(value){
+        this._displayCalcEl.innerHTML = value;
     }
     get numRoot(){
         return this._root;
