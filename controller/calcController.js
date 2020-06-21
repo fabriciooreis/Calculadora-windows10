@@ -1,7 +1,7 @@
 class calcController{
 
     constructor(){
-        this.initialize();
+       
         this._displayCalcEl = document.getElementById("display");
         this._operation = [];
         this._operationSign = ["/", "x", "+", "-"];
@@ -12,29 +12,38 @@ class calcController{
         this.initButtonsEventDrag();   
     }
 
-    initialize(){
-        this.setClear();
-    }
     showConsole(){
         console.log(this._operation);
     }
+
     //removendo a ultima posição do array
     setClearEntry(){
         this._operation.pop();
-        this.showConsole();
+        this.showConsole();  
         this.setLastOperationToDispalay();
     }
+
     //limpando o array
     setClear(){
         this._operation = [];
         this.showConsole();
-        
+        this.setZeroDisplay();   
     }
+
+    //setar zero no display 
+    setZeroDisplay(){
+       this.displayCalc = "0";
+    }
+
     //setar o display
     setLastOperationToDispalay(){
-         
-        let lastNumber = this._operation.join("");
-        this.displayCalc = lastNumber;
+        if(this.getLengthArray() == 0){
+            this.setZeroDisplay();
+        }else{
+            let lastNumber = this._operation.join("");
+            this.displayCalc = lastNumber;
+        }
+     
     }
     //retorna o ultimo index do vetor
     getLastOperation(){
