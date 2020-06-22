@@ -349,8 +349,63 @@ class calcController{
             this.pushOperation('-');
         }
     }
+    
+    //encontrar os sinais da raiz dentro do vetor
+    findRootIndex(){
+        let root = this._operation.indexOf('√');
+        let oneAfter;
 
+        while(root > -1){
 
+            oneAfter = this._operation[root+1];
+            if(oneAfter == undefined){
+                this.setError();
+                return;
+                
+            }
+            this._operation[root] = `Math.sqrt(${oneAfter})`;
+            this._operation[root+1] = '';
+            root = this._operation.indexOf('√');
+            
+        }
+        
+    }
+
+    //conferindo os operadores no vetor
+    checkSigns(){
+        console.log('Tamanho do array: '+this.getLengthArray());
+        let check = this._operation.join("");
+        check = check.replace("x", "*");
+        console.log(check);
+        let root = check.indexOf("√");
+        let division = check.indexOf("/");
+        let multiplication = check.indexOf("*");
+        let sum = check.indexOf("+");
+        let minus = check.indexOf("-");
+        let percent = check.indexOf("%");
+
+        if( root > -1){
+            console.log("encontrei o √ na posicão "+root);
+        }
+        if(division > -1){
+            console.log("encontrei o / na posicão "+division);
+        }
+        if(multiplication > -1){
+            console.log("encontrei o * na posicão "+multiplication);
+        }
+        if(sum > -1){
+            console.log("encontrei o + na posicão "+sum);
+        }
+        if(minus > -1){
+            console.log("encontrei o - na posicão "+minus);
+        }
+        if(percent > -1){
+            console.log("encontrei o % na posicão "+percent);
+        }
+        
+    }
+
+    //setando o erro de sintaxe
     setError(){
         this.displayCalc = "Sintaxe Error ";
     }
@@ -428,7 +483,8 @@ class calcController{
             case '←':
                 break;
             case '=':
-                this.CalC();
+                this.checkSigns();
+                //this.CalC();
                 break;
             case ',':
                 this.addDot(value);
