@@ -41,10 +41,13 @@ class calcController{
             this.setZeroDisplay();
         }else{
             let lastNumber = this._operation.join("");
+            
+            //subustituo '¹/x' por '1÷' para melhor visualização no visor da calculadora
             this.displayCalc = lastNumber;
         }
      
     }
+    
     //retorna o ultimo index do vetor
     getLastOperation(){
         return this._operation[this._operation.length-1];
@@ -203,8 +206,8 @@ class calcController{
         }else if(!isNaN(this.getLastOperation())){
             this.pushOperation(value);
             
-            //impedindo do ¹/x ser trocado por outro sinal
-        }else if(this.getLastOperation() == '¹/x'){
+            //impedindo do 1÷ ser trocado por outro sinal
+        }else if(this.getLastOperation() == '1÷'){
             return;
         }
         //se o ultimo elemento do vetor for um sinal
@@ -227,16 +230,31 @@ class calcController{
     oneUnderX(value){
         let lastNumber;
         lastNumber = this.getLastOperation();
-        lastNumber = lastNumber.indexOf("%");
-        //se no ultimo index tiver o sinal de %
+        if(lastNumber == undefined && this.getLengthArray() == 0){
+            this.pushOperation(value);
+            return;
+            
+        }else{
+            lastNumber = lastNumber.indexOf("%");
+        }
+
+            //se no ultimo index tiver o sinal de %
         if(isNaN(this.getLastOperation()) && lastNumber >-1){
             return;
+
             //se for somente um sinal qualuer
         }else if(isNaN(this.getLastOperation())){
-            this.pushOperation(value);
+            if((this.getLastOperation() === '1÷') && value === '1÷'){
+                return;
+            }else{
+                this.pushOperation(value);
+                return;
+            }
+
+        }else if(!isNaN(this.getLastOperation())){
+            return;
         }
-        else if(!isNaN(this.getLastOperation())){}
-        return;
+        
     }
    
 
@@ -257,7 +275,7 @@ class calcController{
             //podemos elevar ao quadrado
         }else if(!isNaN(this.getLastOperation())){
             number = this._operation.pop();
-            result = (number*number)
+            result = (number*number);
             this.pushOperation(result.toString());
         }else{
             return;
@@ -371,37 +389,38 @@ class calcController{
         
     }
 
+    //econtrar o '1÷' dentro do vetor
+    findOneUnderXIndex(){
+        let oneUnder = this._operation.indexOf('1÷');
+        let oneAfter;
+        let result;
+        while(oneUnder > -1){
+            oneAfter = this._operation[oneUnder+1];
+            if(oneAfter == undefined){
+                this.setError();
+                return;
+            }
+            result = (1/oneAfter);
+            this._operation[oneUnder] = result;
+            this._operation[oneUnder+1] = "";
+            oneUnder = this._operation.indexOf('1÷');
+
+        }
+    }
+
     //conferindo os operadores no vetor
     checkSigns(){
-        console.log('Tamanho do array: '+this.getLengthArray());
-        let check = this._operation.join("");
-        check = check.replace("x", "*");
-        console.log(check);
-        let root = check.indexOf("√");
-        let division = check.indexOf("/");
-        let multiplication = check.indexOf("*");
-        let sum = check.indexOf("+");
-        let minus = check.indexOf("-");
-        let percent = check.indexOf("%");
-
-        if( root > -1){
-            console.log("encontrei o √ na posicão "+root);
+        //verifica se o ultimo elemento do vetor é um sinal, se for não deixo realizar o calculo
+        //Preferi assim ao invés de colocar um sintaxe error na tela
+        if(this.checkLastIsSign()){
+            return;
         }
-        if(division > -1){
-            console.log("encontrei o / na posicão "+division);
-        }
-        if(multiplication > -1){
-            console.log("encontrei o * na posicão "+multiplication);
-        }
-        if(sum > -1){
-            console.log("encontrei o + na posicão "+sum);
-        }
-        if(minus > -1){
-            console.log("encontrei o - na posicão "+minus);
-        }
-        if(percent > -1){
-            console.log("encontrei o % na posicão "+percent);
-        }
+    //para saber qual a ordem entre o 1÷ ou o raiz
+    //descobrir qual sinal vem primeiro no index no vetor
+        
+        this.findOneUnderXIndex();
+        this.findRootIndex();
+        this.showConsole();
         
     }
 
@@ -430,6 +449,14 @@ class calcController{
                 console.log(txtBtn);
             })
         });
+    }
+
+    //checando se o ultimo elemento do vetor é um sinal
+    checkLastIsSign(){
+        let last = this.getLastOperation();
+        if(isNaN(last)){
+            return true;
+        }
     }
 
     get displayCalc(){
@@ -478,7 +505,7 @@ class calcController{
                 this.setRootSrt(value);
                 break;
             case '¹/x':
-                this.oneUnderX(value);
+                this.oneUnderX('1÷');
                 break;
             case '←':
                 break;
