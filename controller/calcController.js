@@ -41,8 +41,9 @@ class calcController{
             this.setZeroDisplay();
         }else{
             let lastNumber = this._operation.join("");
-            
-            //subustituo '¹/x' por '1÷' para melhor visualização no visor da calculadora
+            if(lastNumber.indexOf('*')>-1){
+                lastNumber = lastNumber.replace("*", "x");
+            }
             this.displayCalc = lastNumber;
         }
      
@@ -75,20 +76,11 @@ class calcController{
         return this._operation.indexOf(value);
     }
     
-    //método para calcular os indices do vetor
-    CalC(){
-        
-
-    }
     //calcular o %
-    getCalCPercent(value){
-
-    }
-
-    //calculo dos %
-    CalCPercent(){
+    getCalCPercent(){
         
     }
+
 
     //buscando o ponto 
     getDoot(value){
@@ -262,6 +254,9 @@ class calcController{
     //caso o vetor seja maior que 3, chama a função CalC
     pushOperation(value){
         this._operation.push(value);
+        if(this.getLengthArray() > 3 && this.findRoot() == -1 && this.findOneX() == -1){
+            this.checkSigns();
+        }
         this.showConsole();
         this.setLastOperationToDispalay();
     }
@@ -368,7 +363,7 @@ class calcController{
         }
     }
     
-    //encontrar os sinais da raiz dentro do vetor
+    //encontrar os sinais da raiz dentro do vetor e passar o método para o array
     findRootIndex(){
         let root = this._operation.indexOf('√');
         let oneAfter;
@@ -381,7 +376,7 @@ class calcController{
                 return;
                 
             }
-            this._operation[root] = `Math.sqrt(${oneAfter})`;
+            this._operation[root] = eval(`Math.sqrt(${oneAfter})`);
             this._operation[root+1] = '';
             root = this._operation.indexOf('√');
             
@@ -389,7 +384,7 @@ class calcController{
         
     }
 
-    //econtrar o '1÷' dentro do vetor
+    //econtrar o '1÷' dentro do vetor e passar o método para o array
     findOneUnderXIndex(){
         let oneUnder = this._operation.indexOf('1÷');
         let oneAfter;
@@ -407,21 +402,80 @@ class calcController{
 
         }
     }
+    //encontrar os indices dos 1/x
+    findOneX(){
+       let indexOneX = this._operation.indexOf('1÷');
+       return indexOneX;
+    }
+    //econtrar os índices das raizes
+    findRoot(){
+        let indexRoot = this._operation.indexOf('√');
+        return indexRoot;
+    }
+
+    //método para calcular os indices do vetor, para calcular usando os sinais + - / * e x²
+    CalC(){
+        let str;
+        let result;
+        
+        try{
+            let lastOperation = this.getLastOperation();
+            if(!isNaN(lastOperation)){
+                str = this._operation.join("");
+                
+                result = eval(str);
+                result = parseFloat(result.toFixed(2));
+                this._operation = [result];
+                this.setLastOperationToDispalay();
+                
+            }else{
+                lastOperation = this._operation.pop();
+                str = this._operation.join("");
+                
+                result = eval(str);
+                result = parseFloat(result.toFixed(2));
+                this._operation = [result, lastOperation];
+                this.setLastOperationToDispalay();
+            }
+            
+            
+        }catch(e){
+            this.setError();
+            console.log(e);
+        }
+        
+
+    }
 
     //conferindo os operadores no vetor
     checkSigns(){
-        //verifica se o ultimo elemento do vetor é um sinal, se for não deixo realizar o calculo
-        //Preferi assim ao invés de colocar um sintaxe error na tela
-        if(this.checkLastIsSign()){
-            return;
+        let root = this.findRoot();
+        let oneX = this.findOneX();
+        //o calculo será realizado a cada dois números inseridos
+        if(this.findRoot() == -1 && this.findOneX()== -1){
+            this.CalC();
+
+            //verificando se existe uma raiz no índice do vetor
+        }else if(root > -1){
+            //verificar o que vem depois da raiz
+            //se for um sinal, nesse caso só pode ser um sinal de divisão
+            if(isNaN(this._operation[root+1])){
+                this.findOneUnderXIndex();
+                this.findRootIndex();
+                this.CalC();
+
+                //se o que vem depois da raiz for número
+            }else if(!isNaN(this._operation[root+1])){
+                this.findRootIndex();
+                this.findOneUnderXIndex();
+                this.CalC();
+            }
+            
+        }else if(oneX > -1){
+            this.findOneUnderXIndex();
+            this.CalC();
         }
-    //para saber qual a ordem entre o 1÷ ou o raiz
-    //descobrir qual sinal vem primeiro no index no vetor
-        
-        this.findOneUnderXIndex();
-        this.findRootIndex();
         this.showConsole();
-        
     }
 
     //setando o erro de sintaxe
@@ -492,8 +546,10 @@ class calcController{
             case '+':
             case '-':
             case '/':
-            case 'x':
                 this.addSign(value);
+                break;
+            case 'x':
+                this.addSign('*');
                 break;
             case 'x²':
                 this.addRootSquare();
