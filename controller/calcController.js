@@ -185,7 +185,7 @@ class calcController{
             //para não trocar o sinal de - e + no primeiro elemento do vetor
         }else if(this.getLengthArray() == 1 && value == "/"){
             lastNumber = this.getLastOperation();
-            lastNumber = lastNumber.indexOf("%");
+            //lastNumber = lastNumber.indexOf("%");
             if(!isNaN(this.getLastOperation())){
                 this.pushOperation(value);
                 return;
